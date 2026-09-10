@@ -21,7 +21,7 @@ export default function DecisionOption({ letter, text, state = 'default', disabl
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`bracket-wrap relative flex w-full items-center gap-3.5 rounded border px-4 py-3.5 text-left font-mono text-[13px] leading-snug transition-all duration-200 ${styles[state]} ${disabled && state === 'default' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`bracket-wrap relative flex w-full items-center gap-3.5 rounded border px-4 py-3.5 text-left font-mono text-[13px] leading-snug transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyber-green ${styles[state]} ${disabled && state === 'default' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
     >
       {(isCorrect || isAlert) && (
         <>

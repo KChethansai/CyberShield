@@ -13,6 +13,8 @@ const scoreSchema = new Schema(
     totalScore: {
       type: Number,
       required: [true, 'Total score is required'],
+      min: [0, 'Total score cannot be negative'],
+      max: [1000, 'Total score cannot exceed 1000'],
       default: 0
     },
     categoryBreakdown: {
@@ -27,5 +29,7 @@ const scoreSchema = new Schema(
   },
   { timestamps: true, versionKey: false, strict: 'throw' }
 )
+
+scoreSchema.index({ totalScore: -1 })
 
 export const scoreModel = model('score', scoreSchema)

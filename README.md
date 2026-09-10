@@ -1,116 +1,271 @@
-# CyberShield — Cyber Awareness Game
+# CyberShield — Project Report
 
-A full-stack MERN cyber-awareness quiz game that trains players to spot **phishing, weak passwords, malicious QR codes, and scams** across 24 hand-crafted threat scenarios — with lives, difficulty modes, badge tiers, a mission debrief, and a leaderboard. Built with Express 4, MongoDB, React 18, and Zustand.
+## 1. Project Overview
 
----
+CyberShield is a full-stack, gamified cyber-defense awareness web application structured as an interactive "Digital Safety Escape Room." Designed to train digital instincts against modern cyber threats, the application immerses operatives in simulated threat vectors—spanning phishing campaigns, weak/reused credentials, poisoned QR codes (quishing), and social engineering scams—across 24 hand-crafted tactical scenarios.
 
-## Features
+Featuring real-time telemetry, difficulty tiers, dynamic lives/shield mechanics, per-question countdown pressure, instant actionable debriefs, and a persistent global mainframe leaderboard, CyberShield combines military-grade tactical HUD aesthetics (Obsidian Vanguard HUD) with rigorous full-stack MERN architecture.
 
-- **Threat Simulations** — 24 scenarios across Phishing, Password, QR, and Scam categories, each with explanations
-- **Difficulty Modes** — Easy, Normal, and Hard pools with per-mode lives
-- **Lives & Scoring** — +10 points per correct call, −1 life per miss; lose all lives and the mission ends
-- **Badge Tiers** — Cyber Sentinel, Guardian, Aware, and Novice based on score ratio
-- **Mission Debrief** — Performance by sector, weakest-category tip, and missed-encounter review
-- **Leaderboard** — Top 10 filed scores with badges
-- **Personal Best** — Local best-score tracking with new-best callouts
+All scenarios, intercepts, and breaches in the application are simulated drills designed for cybersecurity education, corporate hygiene training, and competitive awareness workshops.
 
 ---
 
-## Tech Stack
+## 2. Problem Statement
 
-### Backend
-| Package | Purpose |
-|---|---|
-| Express 4 | HTTP server & routing |
-| Mongoose 8 | MongoDB ODM |
-| `cors` | CORS allowlist |
-| `dotenv` | Environment variable loading |
+Cyber attacks targeting individual digital habits—such as spear-phishing, credential harvesting, QR redirection, and financial urgency fraud—continue to cause massive organizational and personal breaches. Traditional cybersecurity awareness programs suffer from critical flaws:
 
-### Frontend
-| Package | Purpose |
-|---|---|
-| React 18 | UI framework |
-| React Router 6 | Client-side routing |
-| Zustand 5 | Global state management |
-| `motion` | Animations & transitions |
-| `react-icons` | Category icons |
-| Vite 5 | Build tool |
+- **Static and Boring Content:** Passive video lectures and multiple-choice quizzes fail to build rapid pattern-recognition instincts under pressure.
+- **Unrealistic Scenarios:** Generic questions with obvious fake options do not reflect subtle, real-world attacker techniques (e.g., lookalike domains, urgent HR memos, physical parking meter tampering).
+- **Delayed or Absent Feedback:** Users are typically told only whether an answer was right or wrong at the end of a module, missing the immediate cognitive link between the threat indicator and the defense protocol.
+- **Lack of Consequence and Urgency:** Real attacks leverage urgency and pressure; standard awareness tests have unlimited time and no stakes.
+- **No Remedial Guidance:** Players finish without knowing their specific vulnerability areas or which vectors require remedial training.
+
+CyberShield solves these problems through an immersive, high-stakes tactical console that enforces time pressure, visual telemetry, instant educational debriefs, and an exhaustive after-action analysis.
 
 ---
 
-## Project Structure
+## 3. Proposed Solution
 
+CyberShield provides a responsive, web-based tactical simulation environment where operatives:
+
+1. **Authorize Mission Cockpit Links:** Engage through a thematic terminal boot sequence with animated system handshakes and connection integrity checks.
+2. **Select Operating Tiers:** Choose between Recruit (Easy), Analyst (Normal), or Sentinel (Hard) intensity tiers that adjust question difficulty pools and starting shield integrity.
+3. **Neutralize Multi-Vector Threats:** Inspect raw telemetry payloads (origin IP, lookalike sender headers, domain TLDs, and urgency flags) before making defense calls.
+4. **Experience Timed Pressure:** Operate against an active per-question countdown clock; timer expirations trigger integrity breaches and shield loss.
+5. **Receive Immediate Tactical Debriefs:** View real-time technical explanations immediately following each call, dissecting exactly why an indicator is legitimate, suspicious, or malicious.
+6. **Analyze Mission Debriefs:** Review comprehensive after-action reports featuring clearance badge conferring, sector-by-sector accuracy breakdowns, priority training advisories, and an interactive mistake log.
+7. **Compete on Global Mainframe:** Commit verified telemetry scores to a persistent MongoDB leaderboard with rate-limiting abuse protection and local fallback resilience.
+
+The entire architecture is implemented as a cohesive, pure JavaScript MERN stack with native browser capabilities, zero heavy third-party UI dependencies, and complete offline capability.
+
+---
+
+## 4. Key Features
+
+### 4.1 Four Core Threat Vectors (24 Scenarios)
+- **Phishing Defense:** Spear-phishing, credential-harvesting lookalikes (`amaz0n-secure.xyz`, `company-portal.com`, `gooogle-drive-docs.com`), fake IT MFA rollout announcements, and legitimate reset notifications.
+- **Password Security:** Entropy analysis, dictionary vulnerability, multi-word passphrase superiority, credential stuffing, and cross-site reuse risks.
+- **QR Code Safety (Quishing):** Physical sticker tampering on parking meters, fraudulent café flyers demanding OTPs, restaurant digital menus, and UPI checkout scams.
+- **Scam Spotting:** UPI collect request fraud, fake bank KYC SMS, courier fee redelivery traps, fraudulent work-from-home recruitment, and phone vishing.
+
+### 4.2 Tactical Game Engine & HUD
+- **Obsidian Vanguard HUD Aesthetic:** Tactical command console styling with scanlines, CRT dot matrix, phosphor green (`#00ff88`), telemetry cyan (`#00d4ff`), and warning crimson (`#ff3366`).
+- **Dynamic Shield Integrity:** Starting shields calibrated to selected intensity tier (3 lives on Recruit/Analyst, 2 lives on Sentinel); breaches decrement shield integrity until mission compromise.
+- **Per-Question Countdown Timer:** 30-second live tactical countdown with visual pulse; expiration triggers defense compromise, deduction of 1 shield, and automatic logging as `TIME EXPIRED`.
+- **Zero-Dependency Native Audio:** Real-time dual-tone phosphor chime for verified intercepts and low warning saw-wave pulses for breaches synthesized purely via the native Web Audio API.
+- **Session Persistence:** Zustand state integrated with `sessionStorage` allows operatives to reload or resume active missions seamlessly without losing progress.
+
+### 4.3 Comprehensive After-Action Debrief
+- **Clearance Badge Conferred:** Dynamic badge tier assignment scaled to achievable max score:
+  - **Cyber Sentinel** (Ratio $\ge$ 91.6%): Expert operative thinking like a senior security analyst.
+  - **Guardian** (Ratio $\ge$ 70.8%): Strong defense instincts with elevated vigilance.
+  - **Aware** (Ratio $\ge$ 41.6%): Decent baseline requiring tactical reinforcement.
+  - **Novice** (Ratio < 41.6%): High vulnerability requiring remedial training drills.
+- **Performance by Tactical Sector:** Mathematical sector breakdown showing neutralized vs. vulnerable sectors.
+- **Priority Training Advisory:** Automated vulnerability detection identifying the operative's weakest vector.
+- **Interactive Missed Intercept Review:** Expandable drawer detailing every miss with the operative's call, verified protocol, and in-depth post-mortem explanation.
+- **Shareable Telemetry:** Integrated Web Share API with one-click clipboard fallback for sharing mission clearances.
+
+### 4.4 Global Mainframe Leaderboard & Analytics
+- Top 10 operative scores sorted descending at the database level.
+- Callsign submission with client-side and server-side validation (1–30 characters).
+- Rate-limiting protection (maximum 10 submissions per IP per 15-minute window).
+- Server-side aggregate telemetry analytics endpoint (`/score-api/analytics`) tracking missions played, average score, high score, badge distribution, and sector miss frequency.
+- Offline resilience via local storage fallback with zero junk placeholder records.
+
+---
+
+## 5. Technologies Used
+
+| Layer | Technologies |
+| --- | --- |
+| **Frontend** | React 18, Vite 5, React Router 6, Zustand 5 |
+| **Styling & HUD** | Tailwind CSS 4, Obsidian Vanguard CSS Tokens, Space Grotesk, JetBrains Mono |
+| **Animation & Motion** | Motion (`motion/react`) |
+| **Icons & Audio** | `react-icons`, Material Symbols Outlined, Native Web Audio API |
+| **Backend** | Node.js, Express 4 |
+| **Database & ODM** | MongoDB, Mongoose 8 |
+| **Security & Routing** | CORS allowlist, Express Rate Limiter, Environment validation |
+| **Testing & Automation** | Playwright MCP, Node.js Test Runners |
+
+---
+
+## 6. Implementation Details
+
+### 6.1 System Architecture
+
+```text
+Operative Browser
+    │
+    ▼
+React 18 + Vite SPA (Obsidian Vanguard HUD)
+    │  REST JSON / Fetch with CORS
+    ▼
+Express API Server (:5000)
+    ├── Question API (/question-api)
+    │   ├── GET /           Grouped questions across 4 sectors
+    │   └── GET /:category  Filtered questions for specific threat vector
+    ├── Score API (/score-api)
+    │   ├── GET /leaderboard Top 10 operative rankings
+    │   ├── GET /analytics   Global telemetry stats & miss rates
+    │   └── POST /           Rate-limited score submission
+    └── Health API (/api/health)
+    │
+    ▼
+MongoDB / Mongoose ODM (:27017)
+    ├── question collection (24 threat vectors, difficulty, explanations)
+    └── score collection (callsign, totalScore, breakdown, badge, timestamps)
 ```
-CyberShield/
+
+### 6.2 Backend Modules
+
+```text
+Backend/
+├── APIs/
+│   ├── QuestionAPI.js    # Grouped and single-sector question endpoints
+│   └── ScoreAPI.js       # Score filing, top-10 leaderboard, analytics & rate limiting
+├── config/
+│   ├── env.js            # Environment variable validation & fallback
+│   └── security.js       # Production-ready CORS origin allowlist
+├── models/
+│   ├── QuestionModel.js  # Scenario schema with category, options, difficulty
+│   └── ScoreModel.js     # Score schema with indexed totalScore and bounds
+├── seed.js               # Idempotent database seeder (24 questions)
+└── server.js             # Express app, security middleware, graceful shutdown
+```
+
+### 6.3 Tactical Threat Evaluation & Scoring Protocol
+
+1. **Scoring Formula:** Each neutralized threat awards exactly $+10$ points. Max score in Normal mode is $240$ points; Easy and Hard modes scale to $160$ points.
+2. **Integrity Breaches:** Choosing an incorrect option or permitting the 30-second timer to expire decrements shield integrity by $1$.
+3. **Terminal Breach:** When shields reach $0$, the mission terminates immediately into an early after-action debrief; no further intercepts may be attempted.
+4. **Badge Ratio Scaler:**
+   $$\text{Ratio} = \frac{\text{Operative Score}}{\text{Max Achievable Score}}$$
+   - $\text{Ratio} \ge \frac{220}{240} \implies \textbf{Cyber Sentinel}$
+   - $\text{Ratio} \ge \frac{170}{240} \implies \textbf{Guardian}$
+   - $\text{Ratio} \ge \frac{100}{240} \implies \textbf{Aware}$
+   - $\text{Ratio} < \frac{100}{240} \implies \textbf{Novice}$
+
+### 6.4 Zero-Dependency Native Audio Engine
+
+Implemented in `Frontend/src/utils/audio.js` using the standard browser `AudioContext`:
+- **Verified Call:** Dual-frequency sine sweep from $587.33\text{ Hz}$ (D5) to $880\text{ Hz}$ (A5) over $120\text{ ms}$ with exponential gain decay.
+- **Compromise Alert:** Low triangle drop from $220\text{ Hz}$ (A3) down to $130.81\text{ Hz}$ (C3) over $200\text{ ms}$.
+- Guaranteed $0\text{ KB}$ network overhead and immune to 404 audio file errors.
+
+### 6.5 Frontend Navigation & State Flow
+
+```text
+/ (Landing Page)
+    │  Initialize Mission
+    ▼
+[BootModal Handshake]
+    │  Authorize Link
+    ▼
+/launch (Cockpit Setup & Tier Selection: Recruit / Analyst / Sentinel)
+    │  Engage Protocol
+    ▼
+/play (Threat Simulation Active)
+    ├── Sector 01: Phishing Defense (6 Scenarios)
+    ├── Sector 02: Password Security (6 Scenarios)
+    ├── Sector 03: QR Code Safety (6 Scenarios)
+    └── Sector 04: Scam Spotting (6 Scenarios)
+    │  All Shields Lost OR All 4 Sectors Cleared
+    ▼
+/result (Tactical Mission Debrief)
+    ├── Badge Conferred & Sector Accuracy
+    ├── Missed Intercepts Review Log
+    ├── Share Telemetry (Web Share / Clipboard)
+    └── Commit Callsign to Mainframe
+    │  Navigate
+    ▼
+/leaderboard (Mainframe Intelligence Archive)
+```
+
+---
+
+## 7. Repository Structure
+
+```text
+cybershield/
 ├── Backend/
 │   ├── APIs/
-│   │   ├── QuestionAPI.js      # All questions grouped, questions by category
-│   │   └── ScoreAPI.js         # Save score, leaderboard
+│   │   ├── QuestionAPI.js    # Threat scenario queries
+│   │   └── ScoreAPI.js       # Leaderboard, score commit, telemetry analytics
 │   ├── config/
-│   │   ├── env.js              # Environment variable validation
-│   │   └── security.js         # CORS allowlist config
+│   │   ├── env.js            # Environment validation
+│   │   └── security.js       # CORS security policies
 │   ├── models/
-│   │   ├── QuestionModel.js
-│   │   └── ScoreModel.js
-│   ├── server.js
-│   ├── seed.js                 # Seeds the 24 threat scenarios
+│   │   ├── QuestionModel.js  # Mongoose scenario schema
+│   │   └── ScoreModel.js     # Mongoose leaderboard score schema
+│   ├── .env.example
 │   ├── package.json
-│   └── .env.example
-└── Frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── LandingPage.jsx
-    │   │   ├── MissionLaunch.jsx
-    │   │   ├── ThreatSimulation.jsx
-    │   │   ├── MissionDebrief.jsx
-    │   │   ├── Leaderboard.jsx
-    │   │   ├── BootSequence.jsx
-    │   │   └── CategoryIcon.jsx
-    │   ├── store/
-    │   │   └── gameStore.js    # Game state: lives, points, progress (Zustand)
-    │   ├── utils/
-    │   │   ├── gameConstants.js # Categories, labels, difficulties
-    │   │   ├── badges.js        # Badge tiers & calculation
-    │   │   ├── questions.js     # Difficulty-pool filtering
-    │   │   └── scores.js        # Breakdown, weakest category, best score
-    │   ├── api/
-    │   │   └── client.js        # Fetch wrapper for the backend APIs
-    │   └── App.jsx             # Router config with lazy loading
-    ├── package.json
-    └── .env.example
+│   ├── seed.js               # 24 hand-crafted scenario seeds
+│   └── server.js             # Server entry point
+├── Frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── client.js     # API client with offline fallback
+│   │   ├── components/
+│   │   │   ├── hud/          # Reusable tactical HUD components
+│   │   │   │   ├── Atmosphere.jsx
+│   │   │   │   ├── BootModal.jsx
+│   │   │   │   ├── BracketPanel.jsx
+│   │   │   │   ├── DecisionOption.jsx
+│   │   │   │   ├── Equalizer.jsx
+│   │   │   │   ├── HudHeader.jsx
+│   │   │   │   ├── SegmentedProgress.jsx
+│   │   │   │   ├── ShieldLives.jsx
+│   │   │   │   ├── StatusBadge.jsx
+│   │   │   │   ├── TelemetryFooter.jsx
+│   │   │   │   └── TelemetryStrip.jsx
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── Leaderboard.jsx
+│   │   │   ├── MissionDebrief.jsx
+│   │   │   ├── MissionLaunch.jsx
+│   │   │   └── ThreatSimulation.jsx
+│   │   ├── hooks/
+│   │   │   └── useQuestionTimer.js
+│   │   ├── store/
+│   │   │   └── gameStore.js  # Zustand store with sessionStorage persistence
+│   │   ├── utils/
+│   │   │   ├── audio.js      # Web Audio API chime synthesizer
+│   │   │   ├── badges.js     # Badge classification thresholds
+│   │   │   ├── fallbackQuestions.js # Offline emergency questions pack
+│   │   │   ├── gameConstants.js
+│   │   │   ├── highlight.jsx # Technical terms syntax highlighter
+│   │   │   └── scores.js     # Accuracy, breakdowns, personal best
+│   │   ├── App.jsx           # Routes with dynamic TitleManager & 404 handler
+│   │   ├── index.css         # Obsidian Vanguard Tailwind design system
+│   │   └── main.jsx
+│   ├── .env.example
+│   ├── index.html            # Meta tags, Open Graph, and SVG favicon
+│   ├── package.json
+│   └── vite.config.js
+├── DESIGN.md                 # Obsidian Vanguard HUD design specification
+└── README.md                 # Project Report
 ```
 
 ---
 
-## Getting Started
+## 8. Installation and Execution
 
-### Prerequisites
+### 8.1 Prerequisites
 
-- Node.js v18+
-- MongoDB (local or Atlas)
+- Node.js 18 or later.
+- MongoDB instance (local `mongod`, Docker/Podman container, or MongoDB Atlas).
 
-### 1. Clone the Repository
-
-```bash
-git clone <repo-url>
-cd CyberShield
-```
-
-### 2. Backend Setup
+### 8.2 Backend Setup
 
 ```bash
 cd Backend
 npm install
-```
-
-Create a `.env` file from the example:
-
-```bash
 cp .env.example .env
+npm run seed
+npm run dev
 ```
 
-Fill in your values:
-
+Configure `Backend/.env`:
 ```env
 DB_URL=mongodb://localhost:27017/cybershield
 PORT=5000
@@ -119,111 +274,111 @@ CLIENT_URLS=http://localhost:5173
 NODE_ENV=development
 ```
 
-Seed the questions:
-
-```bash
-npm run seed
-```
-
-Start the backend:
-
-```bash
-# Development (with file watching)
-npm run dev
-
-# Production
-npm start
-```
-
-### 3. Frontend Setup
+### 8.3 Frontend Setup
 
 ```bash
 cd ../Frontend
 npm install
-```
-
-Create a `.env` file:
-
-```bash
 cp .env.example .env
+npm run dev
 ```
 
+Configure `Frontend/.env`:
 ```env
 VITE_API_URL=http://localhost:5000
 ```
 
-Start the frontend:
+The application will be accessible at `http://localhost:5173`.
 
+### 8.4 Available Commands
+
+**Backend:**
 ```bash
-npm run dev
+npm run dev     # Starts Express backend with node --watch
+npm start       # Starts production Express server
+npm run seed    # Seeds or resets the 24 threat scenarios idempotently
 ```
 
-The app will be available at `http://localhost:5173`.
+**Frontend:**
+```bash
+npm run dev     # Starts Vite development server with HMR
+npm run build   # Compiles optimized production bundle into dist/
+npm run preview # Previews the production build locally
+```
 
 ---
 
-## API Routes
-
-### Question (`/question-api`)
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/` | — | All questions grouped by category |
-| GET | `/:category` | — | Questions for one category (`phishing`, `password`, `qr`, `scam`) |
-
-### Score (`/score-api`)
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/leaderboard` | — | Top 10 scores, highest first |
-| POST | `/` | — | Save a completed game score |
-
-### Health
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/health` | Server status & uptime |
-
----
-
-## Deployment
-
-### Backend — Render
-
-1. Create a new **Web Service** on [Render](https://render.com)
-2. Set **Build Command**: `npm install`
-3. Set **Start Command**: `node server.js`
-4. Add all environment variables from `.env.example` under **Environment**
-5. Set `NODE_ENV=production`
-
-### Frontend — Vercel
-
-1. Import the `Frontend` folder into [Vercel](https://vercel.com)
-2. Set **Framework Preset**: Vite
-3. Add environment variable: `VITE_API_URL=https://your-backend.onrender.com`
-
-After deploying both, update `CLIENT_URLS` in your backend env to include your frontend URL.
-
----
-
-## Environment Variables Reference
+## 9. Environment Variables
 
 ### Backend
 
-| Variable | Description |
-|---|---|
-| `DB_URL` | MongoDB connection string |
-| `PORT` | Server port (default: 5000) |
-| `CLIENT_URL` | Primary frontend URL (dev) |
-| `CLIENT_URLS` | Comma-separated allowed origins (prod) |
-| `NODE_ENV` | `development` or `production` |
+| Variable | Required | Description |
+| --- | --- | --- |
+| `DB_URL` | Yes | MongoDB connection URI (e.g. `mongodb://localhost:27017/cybershield`) |
+| `PORT` | No | Express port; defaults to `5000` |
+| `CLIENT_URL` / `CLIENT_URLS` | No | Comma-separated list of allowed frontend origins for CORS |
+| `NODE_ENV` | No | Environment mode: `development` or `production` |
 
 ### Frontend
 
-| Variable | Description |
-|---|---|
-| `VITE_API_URL` | Backend base URL |
+| Variable | Required | Description |
+| --- | --- | --- |
+| `VITE_API_URL` | Yes | Base URL of the backend API (defaults to `http://localhost:5000`) |
 
 ---
 
-## Author
+## 10. API Summary
 
-**K Chethan Sai**
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Service health status and uptime verification |
+| `GET` | `/question-api` | Returns all 24 scenarios grouped by category |
+| `GET` | `/question-api/:category` | Returns scenarios filtered by vector (`phishing`, `password`, `qr`, `scam`) |
+| `GET` | `/score-api/leaderboard` | Returns top 10 operative scores sorted by `totalScore` descending |
+| `GET` | `/score-api/analytics` | Returns aggregate statistics (total missions, avg score, badge counts, miss rates) |
+| `POST` | `/score-api` | Submits and persists an operative score (rate limited: 10 per 15 min per IP) |
+
+---
+
+## 11. Known Limitations
+
+- **Simulated Email / Web Views:** Intercepted threats are presented in high-fidelity monospace telemetry panels rather than full sandboxed browser webviews.
+- **Single-User Rate Limiting:** The in-memory sliding window rate limiter resets on server process restart; production multi-cluster deployments should integrate Redis.
+- **Offline Question Pack Sync:** Offline emergency questions are bundled statically; updates to the database seed require updating `fallbackQuestions.js` to stay identical.
+
+---
+
+## 12. Future Scope
+
+- **Custom Threat Scenario Builder:** Allow enterprise administrators and instructors to upload custom organizational spear-phishing templates via a protected portal.
+- **Multiplayer Operative Drill:** Real-time synchronized squad escape room challenges using WebSockets.
+- **Phishing URL Scanner Integration:** Live integration with VirusTotal or Google Safe Browsing API for real-time domain risk lookup drills.
+- **Hardware YubiKey / WebAuthn Simulation:** Interactive physical MFA tokens and FIDO2 verification training modules.
+- **Exportable PDF Security Clearance Certificate:** Cryptographically verifiable training completion certificates for corporate compliance audits.
+
+---
+
+## 13. References / Bibliography
+
+1. CISA (Cybersecurity and Infrastructure Security Agency) Phishing Awareness: [https://www.cisa.gov/secure-our-world/recognize-and-report-phishing](https://www.cisa.gov/secure-our-world/recognize-and-report-phishing)
+2. NIST Special Publication 800-63B — Digital Identity Guidelines & Password Practice: [https://pages.nist.gov/800-63-3/sp800-63b.html](https://pages.nist.gov/800-63-3/sp800-63b.html)
+3. FTC (Federal Trade Commission) How to Recognize and Avoid Phishing Scams: [https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams](https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams)
+4. Express.js Documentation: [https://expressjs.com/](https://expressjs.com/)
+5. React 18 Documentation: [https://react.dev/](https://react.dev/)
+6. Zustand State Management: [https://zustand.docs.pmnd.rs/](https://zustand.docs.pmnd.rs/)
+7. Tailwind CSS v4 Documentation: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
+8. Web Audio API W3C Specification: [https://www.w3.org/TR/webaudio/](https://www.w3.org/TR/webaudio/)
+9. Mongoose ODM Documentation: [https://mongoosejs.com/docs/](https://mongoosejs.com/docs/)
+
+---
+
+## 14. Team Members
+
+| Name | Roll Number |
+| --- | --- |
+| K Chethan Sai | `24EG110A17` |
+| Adithya | `24EG110A09` |
+| Sreeman | `24EG110C60` |
+| Nithish | `24EG105R62` |
+
 GitHub: [@KChethansai](https://github.com/KChethansai)

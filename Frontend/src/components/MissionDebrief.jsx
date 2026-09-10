@@ -31,6 +31,7 @@ export default function MissionDebrief() {
 
   const [playerName, setPlayerName] = useState('')
   const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
+  const [shareState, setShareState] = useState('idle') // idle | copied
   const [isNewBest] = useState(() => saveBestScore(points))
 
   const total = getTotalQuestions(questions)
@@ -76,6 +77,40 @@ export default function MissionDebrief() {
   function handlePlayAgain() {
     resetGame()
     navigate('/launch')
+  }
+
+  async function handleShare() {
+    const accuracy = Math.round((correct / Math.max(1, answered)) * 100)
+    const text = `🛡️ CyberShield Mission Debrief\n` +
+      `Badge: ${badge}\n` +
+      `Score: ${points}/${maxPoints} pts (${accuracy}% accuracy)\n` +
+      `Status: ${completed ? 'Mission Complete' : 'Operative Compromised'}\n` +
+      `Train your cyber instincts → ${window.location.origin}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'CyberShield Score', text })
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text)
+        setShareState('copied')
+        setTimeout(() => setShareState('idle'), 2500)
+      } else {
+        throw new Error('No clipboard API')
+      }
+    } catch {
+      try {
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.appendChild(ta)
+        ta.focus()
+        ta.select()
+        document.execCommand('copy')
+        document.body.removeChild(ta)
+        setShareState('copied')
+        setTimeout(() => setShareState('idle'), 2500)
+      } catch {}
+    }
   }
 
   if (gameStatus === 'not-started' || answered === 0) {
@@ -305,8 +340,8 @@ export default function MissionDebrief() {
                 <input
                   type="text"
                   className="flex-1 rounded-sm border border-steel/50 bg-pitch px-4 py-3 font-mono text-xs uppercase tracking-wider text-bone-bright placeholder:text-bone-dim focus:border-cyber-green focus:outline-none focus:ring-1 focus:ring-cyber-green"
-                  placeholder="ENTER OPERATIVE CALLSIGN [MAX 20 CHARS]"
-                  maxLength={20}
+                  placeholder="ENTER OPERATIVE CALLSIGN [MAX 30 CHARS]"
+                  maxLength={30}
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
                   disabled={saveState === 'saving'}
@@ -335,7 +370,13 @@ export default function MissionDebrief() {
             >
               New Mission Run
             </button>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleShare}
+                className="btn-hud btn-hud-outlined px-6 py-3.5 text-xs"
+              >
+                {shareState === 'copied' ? '✓ Copied to Clipboard' : '⬆ Share Score'}
+              </button>
               <Link
                 to="/leaderboard"
                 className="btn-hud btn-hud-steel px-6 py-3.5 text-xs"

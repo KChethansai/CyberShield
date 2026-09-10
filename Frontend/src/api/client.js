@@ -19,13 +19,7 @@ function getLocalLeaderboard() {
     const raw = localStorage.getItem(LOCAL_LEADERBOARD_KEY)
     if (raw) return JSON.parse(raw)
   } catch {}
-  return [
-    { _id: 'rec-01', playerName: 'GHOST_01', totalScore: 240, badge: 'Cyber Sentinel' },
-    { _id: 'rec-02', playerName: 'VANGUARD_X', totalScore: 210, badge: 'Guardian' },
-    { _id: 'rec-03', playerName: 'SPECTRE_99', totalScore: 180, badge: 'Guardian' },
-    { _id: 'rec-04', playerName: 'CIPHER_OPS', totalScore: 140, badge: 'Aware' },
-    { _id: 'rec-05', playerName: 'RECRUIT_7', totalScore: 90, badge: 'Novice' },
-  ]
+  return []
 }
 
 function saveLocalLeaderboard(entry) {
@@ -66,7 +60,7 @@ export const api = {
   getLeaderboard: async () => {
     try {
       const data = await request('/score-api/leaderboard')
-      if (Array.isArray(data) && data.length > 0) return data
+      if (Array.isArray(data)) return data
       return getLocalLeaderboard()
     } catch {
       return getLocalLeaderboard()

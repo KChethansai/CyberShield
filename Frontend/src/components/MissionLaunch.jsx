@@ -189,7 +189,7 @@ export default function MissionLaunch() {
                       </p>
                       <p className="mt-2 text-[11px] leading-relaxed text-bone-muted">{t.desc}</p>
                       <div className="mt-4 flex items-center justify-between border-t border-cyber-green/10 pt-3">
-                        <ShieldLives lives={d.lives} max={3} size={16} />
+                        <ShieldLives lives={d.lives} max={d.lives} size={16} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry">
                           {poolCounts ? `${poolCounts[t.key]} scenarios` : '…'}
                         </span>

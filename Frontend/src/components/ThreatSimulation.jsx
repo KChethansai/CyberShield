@@ -13,6 +13,7 @@ import ShieldLives from './hud/ShieldLives'
 import SegmentedProgress from './hud/SegmentedProgress'
 import StatusBadge from './hud/StatusBadge'
 import CategoryIcon from './CategoryIcon'
+import { playChime } from '../utils/audio'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 
@@ -87,6 +88,7 @@ export default function ThreatSimulation() {
 
   function handleTimeout() {
     if (answered || !question) return
+    playChime('incorrect')
     setSelectedIndex(-1)
     answerQuestion({
       questionId: question._id,
@@ -137,12 +139,14 @@ export default function ThreatSimulation() {
 
   function handleSelect(i) {
     if (answered) return
+    const isCorrect = i === question.correctAnswerIndex
+    playChime(isCorrect ? 'correct' : 'incorrect')
     setSelectedIndex(i)
     answerQuestion({
       questionId: question._id,
       category,
       chosenIndex: i,
-      correct: i === question.correctAnswerIndex
+      correct: isCorrect
     })
   }
 

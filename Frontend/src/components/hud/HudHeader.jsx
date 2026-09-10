@@ -29,10 +29,10 @@ export default function HudHeader() {
           <Equalizer className="hidden h-4 sm:flex" paused={muted} />
           <button
             onClick={() => setMuted((m) => !m)}
-            aria-label={muted ? 'Unmute' : 'Mute'}
+            aria-label={muted ? 'Enable visualizer' : 'Pause visualizer'}
             className="text-[11px] font-bold uppercase tracking-[0.14em] text-bone-muted transition-colors hover:text-cyber-green"
           >
-            {muted ? 'SND:OFF' : 'SND:ON'}
+            {muted ? 'VIZ:OFF' : 'VIZ:ON'}
           </button>
           <Link
             to="/launch"
