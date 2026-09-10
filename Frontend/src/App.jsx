@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { useAuth } from './store/authStore'
 
 // Lazy load route components
 const LandingPage = lazy(() => import('./components/LandingPage'))
@@ -7,6 +8,9 @@ const MissionLaunch = lazy(() => import('./components/MissionLaunch'))
 const ThreatSimulation = lazy(() => import('./components/ThreatSimulation'))
 const MissionDebrief = lazy(() => import('./components/MissionDebrief'))
 const Leaderboard = lazy(() => import('./components/Leaderboard'))
+const SignUp = lazy(() => import('./components/SignUp'))
+const SignIn = lazy(() => import('./components/SignIn'))
+const Profile = lazy(() => import('./components/Profile'))
 
 function TitleManager() {
   const location = useLocation()
@@ -16,7 +20,10 @@ function TitleManager() {
       '/launch': 'CyberShield // Mission Launch Briefing',
       '/play': 'CyberShield // Threat Simulation Active',
       '/result': 'CyberShield // Tactical Mission Debrief',
-      '/leaderboard': 'CyberShield // Mainframe Intelligence Archive'
+      '/leaderboard': 'CyberShield // Mainframe Intelligence Archive',
+      '/signup': 'CyberShield // Operative Registration',
+      '/signin': 'CyberShield // Operative Sign-In',
+      '/profile': 'CyberShield // Operative Dossier'
     }
     document.title = titles[location.pathname] || 'CyberShield // Signal Lost'
   }, [location])
@@ -54,6 +61,10 @@ function NotFound() {
 }
 
 export default function App() {
+  const checkMe = useAuth((s) => s.checkMe)
+  useEffect(() => {
+    checkMe()
+  }, [checkMe])
   return (
     <BrowserRouter>
       <TitleManager />
@@ -72,6 +83,9 @@ export default function App() {
           <Route path="/play" element={<ThreatSimulation />} />
           <Route path="/result" element={<MissionDebrief />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

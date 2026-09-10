@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../store/authStore'
 import Equalizer from './Equalizer'
 
 // Sticky HUD navbar with corner brackets.
 export default function HudHeader() {
   const [muted, setMuted] = useState(false)
+  const user = useAuth((s) => s.user)
+  const isAuthenticated = useAuth((s) => s.isAuthenticated)
   return (
     <header className="sticky top-[25px] z-30 border-b border-cyber-green/20 bg-obsidian/90 backdrop-blur">
       <div className="bracket-wrap mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5">
@@ -30,16 +33,32 @@ export default function HudHeader() {
           <button
             onClick={() => setMuted((m) => !m)}
             aria-label={muted ? 'Enable visualizer' : 'Pause visualizer'}
-            className="text-[11px] font-bold uppercase tracking-[0.14em] text-bone-muted transition-colors hover:text-cyber-green"
+            className="hidden text-[11px] font-bold uppercase tracking-[0.14em] text-bone-muted transition-colors hover:text-cyber-green sm:block"
           >
             {muted ? 'VIZ:OFF' : 'VIZ:ON'}
           </button>
           <Link
             to="/launch"
-            className="rounded border border-cyber-green bg-cyber-green/10 px-4 py-1.5 font-display text-xs font-bold uppercase tracking-[0.1em] text-cyber-green shadow-[0_0_16px_rgba(0,255,136,0.35)] transition-all hover:bg-cyber-green hover:text-obsidian hover:shadow-[0_0_28px_rgba(0,255,136,0.7)]"
+            className="rounded border border-cyber-green bg-cyber-green/10 px-3 py-1.5 font-display text-xs font-bold uppercase tracking-[0.1em] text-cyber-green shadow-[0_0_16px_rgba(0,255,136,0.35)] transition-all hover:bg-cyber-green hover:text-obsidian hover:shadow-[0_0_28px_rgba(0,255,136,0.7)] sm:px-4"
           >
             Initialize
           </Link>
+          {isAuthenticated ? (
+            <Link
+              to="/profile"
+              className="max-w-28 truncate whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-cyber-cyan transition-colors hover:text-cyber-green"
+              title="Operative dossier"
+            >
+              <span className="text-cyber-green">&gt;</span> {user?.username}
+            </Link>
+          ) : (
+            <Link
+              to="/signin"
+              className="whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-bone-muted transition-colors hover:text-cyber-green"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </header>

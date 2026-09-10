@@ -13,7 +13,7 @@ import CategoryIcon from './CategoryIcon'
 import { api } from '../api/client'
 import { useGame } from '../store/gameStore'
 import { CATEGORIES, CATEGORY_LABELS, DIFFICULTIES } from '../utils/gameConstants'
-import { filterByDifficulty } from '../utils/questions'
+import { filterByDifficulty, selectSubset } from '../utils/questions'
 import { getMaxPoints } from '../utils/scores'
 
 const VECTORS = {
@@ -50,7 +50,7 @@ export default function LandingPage() {
       .then((grouped) => {
         const counts = {}
         for (const [key] of Object.entries(DIFFICULTIES)) {
-          counts[key] = getMaxPoints(filterByDifficulty(grouped, key)) / 10
+          counts[key] = getMaxPoints(selectSubset(filterByDifficulty(grouped, key))) / 10
         }
         setPoolCounts(counts)
       })
@@ -64,7 +64,7 @@ export default function LandingPage() {
     setAuthorizing(true)
     try {
       const grouped = await api.getQuestionsGrouped()
-      const questions = filterByDifficulty(grouped, tier)
+      const questions = selectSubset(filterByDifficulty(grouped, tier))
       startGame({
         questions,
         difficulty: tier,

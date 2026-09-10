@@ -283,7 +283,7 @@ export default function ThreatSimulation() {
           <div className="my-5 rounded-sm border border-steel/40 bg-pitch/90 p-4 font-mono text-xs">
             <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-[0.14em]">
               <span className="text-telemetry">[INTERCEPT // PAYLOAD_INSPECTION]</span>
-              <span className="text-bone-dim">TELEMETRY_ID: #{question._id.toUpperCase()}</span>
+              <span className="text-bone-dim">TELEMETRY_ID: #{String(question._id).toUpperCase()}</span>
             </div>
             <div className="mt-2.5 flex flex-wrap items-center gap-2">
               <span className="rounded-xs border border-steel/50 bg-terminal-panel px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-bone-muted">

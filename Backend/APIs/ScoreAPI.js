@@ -1,5 +1,7 @@
 import exp from 'express'
 import { scoreModel } from '../models/ScoreModel.js'
+import { userModel } from '../models/UserModel.js'
+import { optionalAuth, verifyToken } from '../middlewares/verifyToken.js'
 
 export const scoreApp = exp.Router()
 
@@ -83,10 +85,29 @@ scoreApp.get('/analytics', async (req, res, next) => {
   }
 })
 
-//save a completed game score
-scoreApp.post('/', scoreRateLimit, async (req, res, next) => {
+//get the authenticated operative's own history — newest first, max 20.
+scoreApp.get('/mine', verifyToken, async (req, res, next) => {
   try {
-    const { playerName, totalScore, categoryBreakdown, badge } = req.body
+    const scores = await scoreModel
+      .find({ userId: req.userId })
+      .sort({ totalScore: -1 })
+      .limit(20)
+      .lean()
+    const user = await userModel.findById(req.userId).lean()
+    return res.status(200).json({
+      scores,
+      bestScore: user?.bestScore || 0,
+      badge: user?.badge || '',
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+//save a completed game score (guest or authenticated via optional cookie).
+scoreApp.post('/', scoreRateLimit, optionalAuth, async (req, res, next) => {
+  try {
+    const { playerName, totalScore, categoryBreakdown, badge, userId } = req.body
 
     if (typeof playerName !== 'string' || playerName.trim().length === 0) {
       return res.status(400).json({ message: 'playerName is required' })
@@ -112,14 +133,35 @@ scoreApp.post('/', scoreRateLimit, async (req, res, next) => {
     if (badge !== undefined && typeof badge !== 'string') {
       return res.status(400).json({ message: 'badge must be a string' })
     }
+    //optional owner link — must be a valid id AND match the session when signed in.
+    let ownerId = null
+    if (userId !== undefined && userId !== null) {
+      if (typeof userId !== 'string' || !/^[a-f0-9]{24}$/i.test(userId)) {
+        return res.status(400).json({ message: 'userId is invalid' })
+      }
+      if (req.userId && req.userId !== userId) {
+        return res.status(403).json({ message: 'Cannot file a score for another operative' })
+      }
+      ownerId = userId
+    } else if (req.userId) {
+      ownerId = req.userId
+    }
 
     //save score
     const score = await scoreModel.create({
       playerName: playerName.trim(),
       totalScore,
       categoryBreakdown,
-      badge
+      badge,
+      userId: ownerId,
     })
+    //track personal best for signed-in operatives
+    if (ownerId) {
+      await userModel.updateOne(
+        { _id: ownerId, $or: [{ bestScore: { $lt: totalScore } }, { bestScore: { $exists: false } }] },
+        { $set: { bestScore: totalScore, badge: badge || '' } }
+      )
+    }
     return res.status(201).json(score)
   } catch (err) {
     next(err)

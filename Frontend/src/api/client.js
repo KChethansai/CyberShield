@@ -5,12 +5,30 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  if (!res.ok) {
+    let message = `API error: ${res.status}`
+    try {
+      const body = await res.clone().json()
+      if (body?.message) message = body.message
+    } catch {}
+    throw new Error(message);
+  }
   return res.json();
 }
+
+// mongo ObjectIds have no .toUpperCase and serialize unpredictably —
+// normalize to strings once, at the client boundary.
+const normalizeIds = (grouped) =>
+  Object.fromEntries(
+    Object.entries(grouped || {}).map(([cat, list]) => [
+      cat,
+      (list || []).map((q) => ({ ...q, _id: String(q._id) })),
+    ])
+  )
 
 const LOCAL_LEADERBOARD_KEY = 'cybershield-local-leaderboard'
 
@@ -36,7 +54,7 @@ export const api = {
   getQuestionsGrouped: async () => {
     try {
       const data = await request('/question-api')
-      if (data && Object.keys(data).length > 0) return data
+      if (data && Object.keys(data).length > 0) return normalizeIds(data)
       return FALLBACK_QUESTIONS
     } catch {
       return FALLBACK_QUESTIONS
@@ -44,7 +62,8 @@ export const api = {
   },
   getQuestionsByCategory: async (category) => {
     try {
-      return await request(`/question-api/${category}`)
+      const list = await request(`/question-api/${category}`)
+      return (list || []).map((q) => ({ ...q, _id: String(q._id) }))
     } catch {
       return FALLBACK_QUESTIONS[category] || []
     }
@@ -66,5 +85,12 @@ export const api = {
       return getLocalLeaderboard()
     }
   },
+  getMyHistory: () => request('/score-api/mine'),
+  register: (payload) =>
+    request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
+  login: (payload) =>
+    request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  logout: () => request('/api/auth/logout', { method: 'POST' }),
+  getMe: () => request('/api/auth/me'),
 };
 

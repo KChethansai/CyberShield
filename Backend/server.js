@@ -1,11 +1,13 @@
 import exp from 'express'
 import { connect } from 'mongoose'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import { env, isProduction } from './config/env.js'
 import { corsOptions } from './config/security.js'
 import { questionApp } from './APIs/QuestionAPI.js'
 import { scoreApp } from './APIs/ScoreAPI.js'
+import { authApp } from './APIs/AuthAPI.js'
 
 const app = exp()
 
@@ -17,10 +19,12 @@ app.use(cors(corsOptions))
 
 // Parse JSON bodies
 app.use(exp.json({ limit: '20kb' }))
+app.use(cookieParser())
 
 // API Routes
 app.use('/question-api', questionApp)
 app.use('/score-api', scoreApp)
+app.use('/api/auth', authApp)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() })

@@ -10,6 +10,10 @@ export const CATEGORY_LABELS = {
 export const POINTS_PER_CORRECT = 10
 export const STARTING_LIVES = 3
 
+// playthrough size: random subset pulled per category from the full pool.
+// full 200-question runs are a marathon — 10/category (40 total, 400 max pts).
+export const QUESTIONS_PER_CATEGORY = 10
+
 // pool = which question difficulties load; lives override per mode.
 export const DIFFICULTIES = {
   easy: { label: 'Easy', lives: 3, pool: ['easy', 'medium'] },

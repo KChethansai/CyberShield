@@ -2,6 +2,7 @@
 import { env } from './env.js'
 
 export const corsOptions = {
+  credentials: true,
   origin: (origin, callback) => {
     const isLocalDev = env.nodeEnv !== 'production' &&
       /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || '')

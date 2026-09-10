@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useGame, getTotalQuestions, CATEGORIES } from '../store/gameStore'
+import { useAuth } from '../store/authStore'
 import { CATEGORY_LABELS } from '../utils/gameConstants'
 import { BADGES, BADGE_ICONS, getBadge } from '../utils/badges'
 import {
@@ -27,9 +28,11 @@ export default function MissionDebrief() {
   const answeredQuestions = useGame((s) => s.answeredQuestions)
   const gameStatus = useGame((s) => s.gameStatus)
   const resetGame = useGame((s) => s.resetGame)
+  const authUser = useAuth((s) => s.user)
+  const noteScore = useAuth((s) => s.noteScore)
   const navigate = useNavigate()
 
-  const [playerName, setPlayerName] = useState('')
+  const [playerName, setPlayerName] = useState(authUser?.username || '')
   const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
   const [shareState, setShareState] = useState('idle') // idle | copied
   const [isNewBest] = useState(() => saveBestScore(points))
@@ -49,7 +52,7 @@ export default function MissionDebrief() {
   const questionById = useMemo(() => {
     const map = {}
     for (const cat of CATEGORIES) {
-      for (const q of questions[cat] || []) map[q._id] = q
+      for (const q of questions[cat] || []) map[String(q._id)] = q
     }
     return map
   }, [questions])
@@ -66,8 +69,10 @@ export default function MissionDebrief() {
         playerName: playerName.trim(),
         totalScore: points,
         categoryBreakdown: breakdown,
-        badge
+        badge,
+        userId: authUser?._id || undefined,
       })
+      noteScore(points, badge)
       setSaveState('saved')
     } catch {
       setSaveState('error')
@@ -290,7 +295,7 @@ export default function MissionDebrief() {
               </summary>
               <div className="mt-4 space-y-4 border-t border-steel/30 pt-4">
                 {mistakes.map((m, i) => {
-                  const q = questionById[m.questionId]
+                  const q = questionById[String(m.questionId)]
                   if (!q) return null
                   return (
                     <div

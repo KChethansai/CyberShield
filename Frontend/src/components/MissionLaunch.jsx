@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useGame } from '../store/gameStore'
 import { DIFFICULTIES } from '../utils/gameConstants'
-import { filterByDifficulty } from '../utils/questions'
+import { filterByDifficulty, selectSubset } from '../utils/questions'
 import { getBestScore, getMaxPoints } from '../utils/scores'
 import Atmosphere from './hud/Atmosphere'
 import TelemetryStrip from './hud/TelemetryStrip'
@@ -40,7 +40,7 @@ export default function MissionLaunch() {
       .then((grouped) => {
         const counts = {}
         for (const [key] of Object.entries(DIFFICULTIES)) {
-          counts[key] = getMaxPoints(filterByDifficulty(grouped, key)) / 10
+          counts[key] = getMaxPoints(selectSubset(filterByDifficulty(grouped, key))) / 10
         }
         setPoolCounts(counts)
       })
@@ -55,7 +55,7 @@ export default function MissionLaunch() {
     setError('')
     try {
       const grouped = await api.getQuestionsGrouped()
-      const questions = filterByDifficulty(grouped, difficulty)
+      const questions = selectSubset(filterByDifficulty(grouped, difficulty))
       if (getMaxPoints(questions) === 0) {
         throw new Error('empty')
       }

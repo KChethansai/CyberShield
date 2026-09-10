@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-CyberShield is a full-stack, gamified cyber-defense awareness web application structured as an interactive "Digital Safety Escape Room." Designed to train digital instincts against modern cyber threats, the application immerses operatives in simulated threat vectors—spanning phishing campaigns, weak/reused credentials, poisoned QR codes (quishing), and social engineering scams—across 24 hand-crafted tactical scenarios.
+CyberShield is a full-stack, gamified cyber-defense awareness web application structured as an interactive "Digital Safety Escape Room." Designed to train digital instincts against modern cyber threats, the application immerses operatives in simulated threat vectors—spanning phishing campaigns, weak/reused credentials, poisoned QR codes (quishing), and social engineering scams—across a 200-scenario bank (50 per vector; 10 drawn per vector per run).
 
 Featuring real-time telemetry, difficulty tiers, dynamic lives/shield mechanics, per-question countdown pressure, instant actionable debriefs, and a persistent global mainframe leaderboard, CyberShield combines military-grade tactical HUD aesthetics (Obsidian Vanguard HUD) with rigorous full-stack MERN architecture.
 
@@ -42,7 +42,7 @@ The entire architecture is implemented as a cohesive, pure JavaScript MERN stack
 
 ## 4. Key Features
 
-### 4.1 Four Core Threat Vectors (24 Scenarios)
+### 4.1 Four Core Threat Vectors (200-Scenario Pool, 10 Per Vector Per Run)
 - **Phishing Defense:** Spear-phishing, credential-harvesting lookalikes (`amaz0n-secure.xyz`, `company-portal.com`, `gooogle-drive-docs.com`), fake IT MFA rollout announcements, and legitimate reset notifications.
 - **Password Security:** Entropy analysis, dictionary vulnerability, multi-word passphrase superiority, credential stuffing, and cross-site reuse risks.
 - **QR Code Safety (Quishing):** Physical sticker tampering on parking meters, fraudulent café flyers demanding OTPs, restaurant digital menus, and UPI checkout scams.
@@ -73,6 +73,13 @@ The entire architecture is implemented as a cohesive, pure JavaScript MERN stack
 - Server-side aggregate telemetry analytics endpoint (`/score-api/analytics`) tracking missions played, average score, high score, badge distribution, and sector miss frequency.
 - Offline resilience via local storage fallback with zero junk placeholder records.
 
+### 4.5 Operative Accounts (Optional Sign-Up / Sign-In)
+- Callsign + email registration with bcrypt-hashed passwords (12 rounds); instant session on sign-up.
+- JWT session in an httpOnly cookie (`secure` in production, `sameSite=lax`); session restored on app load via `/api/auth/me`.
+- Personal dossier (`/profile`): best score, earned badge, and per-mission history via protected `/score-api/mine`.
+- Leaderboard files scores under the authenticated callsign; guest play stays fully functional with unlinked scores.
+- Rate limiting on register/login; generic `Invalid credentials` on login failure (no user enumeration); password hashes never leave the database.
+
 ---
 
 ## 5. Technologies Used
@@ -85,7 +92,7 @@ The entire architecture is implemented as a cohesive, pure JavaScript MERN stack
 | **Icons & Audio** | `react-icons`, Material Symbols Outlined, Native Web Audio API |
 | **Backend** | Node.js, Express 4 |
 | **Database & ODM** | MongoDB, Mongoose 8 |
-| **Security & Routing** | CORS allowlist, Express Rate Limiter, Environment validation |
+| **Security & Routing** | CORS allowlist (credentials), bcryptjs password hashing, JWT httpOnly cookies, in-memory rate limiting, environment validation |
 | **Testing & Automation** | Playwright MCP, Node.js Test Runners |
 
 ---
@@ -113,7 +120,7 @@ Express API Server (:5000)
     │
     ▼
 MongoDB / Mongoose ODM (:27017)
-    ├── question collection (24 threat vectors, difficulty, explanations)
+    ├── question collection (200 threat vectors: 50 per category, 24 originals + 176 added)
     └── score collection (callsign, totalScore, breakdown, badge, timestamps)
 ```
 
@@ -122,21 +129,27 @@ MongoDB / Mongoose ODM (:27017)
 ```text
 Backend/
 ├── APIs/
+│   ├── AuthAPI.js        # Register/login/logout/me, JWT httpOnly cookie, rate limited
 │   ├── QuestionAPI.js    # Grouped and single-sector question endpoints
-│   └── ScoreAPI.js       # Score filing, top-10 leaderboard, analytics & rate limiting
+│   └── ScoreAPI.js       # Score filing, top-10 leaderboard, analytics, /mine & rate limiting
 ├── config/
-│   ├── env.js            # Environment variable validation & fallback
-│   └── security.js       # Production-ready CORS origin allowlist
+│   ├── env.js            # Environment variable validation & fallback (DB_URL, JWT_SECRET required)
+│   └── security.js       # CORS origin allowlist with credentials support
+├── middlewares/
+│   └── verifyToken.js    # Strict + optional JWT session auth, cookie options
 ├── models/
 │   ├── QuestionModel.js  # Scenario schema with category, options, difficulty
-│   └── ScoreModel.js     # Score schema with indexed totalScore and bounds
-├── seed.js               # Idempotent database seeder (24 questions)
+│   ├── ScoreModel.js     # Score schema with indexed totalScore and optional userId link
+│   └── UserModel.js      # Operative account: unique username/email, bcrypt hash (never returned)
+├── questions-data.js     # 200-scenario bank: 50 per category in 4 insert batches
+├── validate-seed.js      # DB-free validator: counts, index bounds, duplicate detection
+├── seed.js               # Wipe-and-reseed database seeder (200 questions, batched per category)
 └── server.js             # Express app, security middleware, graceful shutdown
 ```
 
 ### 6.3 Tactical Threat Evaluation & Scoring Protocol
 
-1. **Scoring Formula:** Each neutralized threat awards exactly $+10$ points. Max score in Normal mode is $240$ points; Easy and Hard modes scale to $160$ points.
+1. **Scoring Formula:** Each neutralized threat awards exactly $+10$ points. A playthrough pulls a randomized subset of 10 questions per vector (40 total), so max score is $400$ points on every tier.
 2. **Integrity Breaches:** Choosing an incorrect option or permitting the 30-second timer to expire decrements shield integrity by $1$.
 3. **Terminal Breach:** When shields reach $0$, the mission terminates immediately into an early after-action debrief; no further intercepts may be attempted.
 4. **Badge Ratio Scaler:**
@@ -166,10 +179,10 @@ Implemented in `Frontend/src/utils/audio.js` using the standard browser `AudioCo
     │  Engage Protocol
     ▼
 /play (Threat Simulation Active)
-    ├── Sector 01: Phishing Defense (6 Scenarios)
-    ├── Sector 02: Password Security (6 Scenarios)
-    ├── Sector 03: QR Code Safety (6 Scenarios)
-    └── Sector 04: Scam Spotting (6 Scenarios)
+    ├── Sector 01: Phishing Defense (10 Scenarios, random subset of 50)
+    ├── Sector 02: Password Security (10 Scenarios, random subset of 50)
+    ├── Sector 03: QR Code Safety (10 Scenarios, random subset of 50)
+    └── Sector 04: Scam Spotting (10 Scenarios, random subset of 50)
     │  All Shields Lost OR All 4 Sectors Cleared
     ▼
 /result (Tactical Mission Debrief)
@@ -190,17 +203,23 @@ Implemented in `Frontend/src/utils/audio.js` using the standard browser `AudioCo
 cybershield/
 ├── Backend/
 │   ├── APIs/
+│   │   ├── AuthAPI.js        # Operative register/login/logout/me (JWT cookie)
 │   │   ├── QuestionAPI.js    # Threat scenario queries
-│   │   └── ScoreAPI.js       # Leaderboard, score commit, telemetry analytics
+│   │   └── ScoreAPI.js       # Leaderboard, score commit, telemetry analytics, /mine
 │   ├── config/
-│   │   ├── env.js            # Environment validation
-│   │   └── security.js       # CORS security policies
+│   │   ├── env.js            # Environment validation (DB_URL, JWT_SECRET required)
+│   │   └── security.js       # CORS security policies (credentials enabled)
+│   ├── middlewares/
+│   │   └── verifyToken.js    # Strict + optional JWT session auth
 │   ├── models/
 │   │   ├── QuestionModel.js  # Mongoose scenario schema
-│   │   └── ScoreModel.js     # Mongoose leaderboard score schema
+│   │   ├── ScoreModel.js     # Mongoose leaderboard score schema (+ optional userId)
+│   │   └── UserModel.js      # Mongoose operative account schema (bcrypt hash)
 │   ├── .env.example
 │   ├── package.json
-│   ├── seed.js               # 24 hand-crafted scenario seeds
+│   ├── questions-data.js     # 200-scenario bank (50 per category, 4 batches)
+│   ├── validate-seed.js      # DB-free seed validator (counts, bounds, duplicates)
+│   ├── seed.js               # Wipe-and-reseed scenario seeder (200 questions)
 │   └── server.js             # Server entry point
 ├── Frontend/
 │   ├── src/
@@ -223,17 +242,22 @@ cybershield/
 │   │   │   ├── Leaderboard.jsx
 │   │   │   ├── MissionDebrief.jsx
 │   │   │   ├── MissionLaunch.jsx
+│   │   │   ├── Profile.jsx       # Operative dossier: best score, badge, history
+│   │   │   ├── SignIn.jsx        # HUD-styled sign-in with themed errors
+│   │   │   ├── SignUp.jsx        # HUD-styled registration with themed errors
 │   │   │   └── ThreatSimulation.jsx
 │   │   ├── hooks/
 │   │   │   └── useQuestionTimer.js
 │   │   ├── store/
+│   │   │   ├── authStore.js  # Zustand identity state (cookie session, checkMe on load)
 │   │   │   └── gameStore.js  # Zustand store with sessionStorage persistence
 │   │   ├── utils/
 │   │   │   ├── audio.js      # Web Audio API chime synthesizer
 │   │   │   ├── badges.js     # Badge classification thresholds
-│   │   │   ├── fallbackQuestions.js # Offline emergency questions pack
-│   │   │   ├── gameConstants.js
+│   │   │   ├── fallbackQuestions.js # Offline emergency questions pack (24)
+│   │   │   ├── gameConstants.js # Categories, lives, QUESTIONS_PER_CATEGORY (10)
 │   │   │   ├── highlight.jsx # Technical terms syntax highlighter
+│   │   │   ├── questions.js  # Difficulty filter + randomized subset selection
 │   │   │   └── scores.js     # Accuracy, breakdowns, personal best
 │   │   ├── App.jsx           # Routes with dynamic TitleManager & 404 handler
 │   │   ├── index.css         # Obsidian Vanguard Tailwind design system
@@ -267,12 +291,17 @@ npm run dev
 
 Configure `Backend/.env`:
 ```env
-DB_URL=mongodb://localhost:27017/cybershield
+DB_URL=mongodb://127.0.0.1:27017/cybershield
+JWT_SECRET=change-me-to-a-long-random-string-in-production
 PORT=5000
 CLIENT_URL=http://localhost:5173
 CLIENT_URLS=http://localhost:5173
 NODE_ENV=development
 ```
+
+> Seed behavior: `npm run seed` is wipe-and-reseed (deletes all questions, then
+> inserts the 200-scenario bank in 4 per-category batches). Validate content
+> any time with `node validate-seed.js` (no database needed).
 
 ### 8.3 Frontend Setup
 
@@ -296,7 +325,7 @@ The application will be accessible at `http://localhost:5173`.
 ```bash
 npm run dev     # Starts Express backend with node --watch
 npm start       # Starts production Express server
-npm run seed    # Seeds or resets the 24 threat scenarios idempotently
+npm run seed    # Seeds or resets the 200 threat scenarios idempotently (50 per category)
 ```
 
 **Frontend:**
@@ -314,7 +343,8 @@ npm run preview # Previews the production build locally
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `DB_URL` | Yes | MongoDB connection URI (e.g. `mongodb://localhost:27017/cybershield`) |
+| `DB_URL` | Yes | MongoDB connection URI (e.g. `mongodb://127.0.0.1:27017/cybershield`) |
+| `JWT_SECRET` | Yes | Secret for signing session JWTs (long random string; never commit the real one) |
 | `PORT` | No | Express port; defaults to `5000` |
 | `CLIENT_URL` / `CLIENT_URLS` | No | Comma-separated list of allowed frontend origins for CORS |
 | `NODE_ENV` | No | Environment mode: `development` or `production` |
@@ -332,11 +362,16 @@ npm run preview # Previews the production build locally
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/api/health` | Service health status and uptime verification |
-| `GET` | `/question-api` | Returns all 24 scenarios grouped by category |
+| `GET` | `/question-api` | Returns all 200 scenarios grouped by category |
 | `GET` | `/question-api/:category` | Returns scenarios filtered by vector (`phishing`, `password`, `qr`, `scam`) |
 | `GET` | `/score-api/leaderboard` | Returns top 10 operative scores sorted by `totalScore` descending |
 | `GET` | `/score-api/analytics` | Returns aggregate statistics (total missions, avg score, badge counts, miss rates) |
-| `POST` | `/score-api` | Submits and persists an operative score (rate limited: 10 per 15 min per IP) |
+| `GET` | `/score-api/mine` | Returns the signed-in operative's history + best (requires session cookie) |
+| `POST` | `/score-api` | Submits and persists an operative score (rate limited: 10 per 15 min per IP; optional `userId` links it to an account, guest scores store `null`) |
+| `POST` | `/api/auth/register` | Creates an operative account and starts a session (rate limited: 10 per hour per IP) |
+| `POST` | `/api/auth/login` | Signs in with callsign or email (generic `Invalid credentials` on failure; rate limited: 10 per 15 min per IP) |
+| `POST` | `/api/auth/logout` | Clears the session cookie |
+| `GET` | `/api/auth/me` | Returns the current session operative (requires session cookie; never includes the password hash) |
 
 ---
 
@@ -344,7 +379,8 @@ npm run preview # Previews the production build locally
 
 - **Simulated Email / Web Views:** Intercepted threats are presented in high-fidelity monospace telemetry panels rather than full sandboxed browser webviews.
 - **Single-User Rate Limiting:** The in-memory sliding window rate limiter resets on server process restart; production multi-cluster deployments should integrate Redis.
-- **Offline Question Pack Sync:** Offline emergency questions are bundled statically; updates to the database seed require updating `fallbackQuestions.js` to stay identical.
+- **Offline Question Pack Sync:** Offline emergency questions are bundled statically (24 scenarios); the live pool holds 200. Gameplay works offline from the static pack; counts differ until the backend is reachable.
+- **Operative Accounts Are Optional:** Sign-up/sign-in persist leaderboard identity, best score, and history via an httpOnly JWT cookie; guest play remains fully functional with scores stored unlinked.
 
 ---
 
