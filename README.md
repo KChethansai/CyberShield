@@ -348,7 +348,7 @@ npm run preview # Previews the production build locally
 | `DB_URL` | Yes | MongoDB connection URI (e.g. `mongodb://127.0.0.1:27017/cybershield`) |
 | `SECRET_KEY` | Yes | Secret for signing session JWTs (long random string; never commit the real one) |
 | `PORT` | No | Express port; defaults to `5000` |
-| `CLIENT_URL` | No | Allowed frontend origin for CORS |
+| `CLIENT_URL` | No | Allowed frontend origin(s) for CORS — comma-separated if several (exact scheme+host, no trailing slash; compared slash-tolerantly) |
 | `CLOUDINARY_CLOUD_NAME` | No | Reserved for future media uploads (currently unused) |
 | `CLOUDINARY_API_KEY` | No | Reserved for future media uploads (currently unused) |
 | `CLOUDINARY_API_SECRET` | No | Reserved for future media uploads (currently unused) |

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { env } from '../config/env.js'
+import { env, isProduction } from '../config/env.js'
 
 //strict: rejects requests without a valid session cookie (401).
 export function verifyToken(req, res, next) {
@@ -32,10 +32,13 @@ export function optionalAuth(req, res, next) {
 export const COOKIE_NAME = 'cybershield_token'
 
 export function sessionCookieOptions() {
+  // frontend and backend live on different hosts in production (cross-site),
+  // so the session cookie needs SameSite=None + Secure or browsers drop it.
+  // localhost dev stays Lax + non-secure (plain http).
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: '/',
   }

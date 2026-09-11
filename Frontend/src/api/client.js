@@ -1,7 +1,8 @@
 import { FALLBACK_QUESTIONS } from '../utils/fallbackQuestions'
 
-//base api url
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+//base api url — trailing slashes stripped so `${BASE_URL}/path`
+//never produces a double-slash (which Express would not route-match).
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/+$/, '')
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
