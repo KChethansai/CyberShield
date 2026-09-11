@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 config({ path: path.join(__dirname, '../.env') })
 
-const requiredVars = ['DB_URL', 'JWT_SECRET']
+const requiredVars = ['DB_URL', 'SECRET_KEY']
 
 const missingVars = requiredVars.filter((key) => !process.env[key])
 
@@ -18,8 +18,8 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT) || 5000,
   dbUrl: process.env.DB_URL,
-  jwtSecret: process.env.JWT_SECRET,
-  clientUrls: (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:5173')
+  secretKey: process.env.SECRET_KEY,
+  clientUrls: (process.env.CLIENT_URL || 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)

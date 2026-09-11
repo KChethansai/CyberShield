@@ -6,7 +6,7 @@ export function verifyToken(req, res, next) {
   const token = req.cookies?.[COOKIE_NAME]
   if (!token) return res.status(401).json({ message: 'Authentication required' })
   try {
-    const payload = jwt.verify(token, env.jwtSecret)
+    const payload = jwt.verify(token, env.secretKey)
     req.userId = payload.sub
     next()
   } catch {
@@ -21,7 +21,7 @@ export function optionalAuth(req, res, next) {
   req.userId = null
   if (token) {
     try {
-      req.userId = jwt.verify(token, env.jwtSecret).sub
+      req.userId = jwt.verify(token, env.secretKey).sub
     } catch {
       // invalid/expired cookie on an optional route — treat as guest, not an error
     }

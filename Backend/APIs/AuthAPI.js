@@ -36,7 +36,7 @@ const USERNAME_RE = /^[A-Za-z0-9_.-]{1,30}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function signSession(res, userId) {
-  const token = jwt.sign({ sub: String(userId) }, env.jwtSecret, { expiresIn: '7d' })
+  const token = jwt.sign({ sub: String(userId) }, env.secretKey, { expiresIn: '7d' })
   res.cookie(COOKIE_NAME, token, sessionCookieOptions())
 }
 

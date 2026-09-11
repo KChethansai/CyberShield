@@ -133,7 +133,7 @@ Backend/
 │   ├── QuestionAPI.js    # Grouped and single-sector question endpoints
 │   └── ScoreAPI.js       # Score filing, top-10 leaderboard, analytics, /mine & rate limiting
 ├── config/
-│   ├── env.js            # Environment variable validation & fallback (DB_URL, JWT_SECRET required)
+│   ├── env.js            # Environment variable validation & fallback (DB_URL, SECRET_KEY required)
 │   └── security.js       # CORS origin allowlist with credentials support
 ├── middlewares/
 │   └── verifyToken.js    # Strict + optional JWT session auth, cookie options
@@ -207,7 +207,7 @@ cybershield/
 │   │   ├── QuestionAPI.js    # Threat scenario queries
 │   │   └── ScoreAPI.js       # Leaderboard, score commit, telemetry analytics, /mine
 │   ├── config/
-│   │   ├── env.js            # Environment validation (DB_URL, JWT_SECRET required)
+│   │   ├── env.js            # Environment validation (DB_URL, SECRET_KEY required)
 │   │   └── security.js       # CORS security policies (credentials enabled)
 │   ├── middlewares/
 │   │   └── verifyToken.js    # Strict + optional JWT session auth
@@ -292,10 +292,12 @@ npm run dev
 Configure `Backend/.env`:
 ```env
 DB_URL=mongodb://127.0.0.1:27017/cybershield
-JWT_SECRET=change-me-to-a-long-random-string-in-production
+SECRET_KEY=change-me-to-a-long-random-string-in-production
 PORT=5000
 CLIENT_URL=http://localhost:5173
-CLIENT_URLS=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 NODE_ENV=development
 ```
 
@@ -344,9 +346,12 @@ npm run preview # Previews the production build locally
 | Variable | Required | Description |
 | --- | --- | --- |
 | `DB_URL` | Yes | MongoDB connection URI (e.g. `mongodb://127.0.0.1:27017/cybershield`) |
-| `JWT_SECRET` | Yes | Secret for signing session JWTs (long random string; never commit the real one) |
+| `SECRET_KEY` | Yes | Secret for signing session JWTs (long random string; never commit the real one) |
 | `PORT` | No | Express port; defaults to `5000` |
-| `CLIENT_URL` / `CLIENT_URLS` | No | Comma-separated list of allowed frontend origins for CORS |
+| `CLIENT_URL` | No | Allowed frontend origin for CORS |
+| `CLOUDINARY_CLOUD_NAME` | No | Reserved for future media uploads (currently unused) |
+| `CLOUDINARY_API_KEY` | No | Reserved for future media uploads (currently unused) |
+| `CLOUDINARY_API_SECRET` | No | Reserved for future media uploads (currently unused) |
 | `NODE_ENV` | No | Environment mode: `development` or `production` |
 
 ### Frontend
