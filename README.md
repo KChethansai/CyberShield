@@ -413,8 +413,9 @@ npm run preview # Previews the production build locally
 | Name | Roll Number |
 | --- | --- |
 | K Chethan Sai | `24EG110A17` |
-| Adithya | `24EG110A09` |
-| Sreeman | `24EG110C60` |
-| Nithish | `24EG105R62` |
+| Sanjay | `24EG105M58` |
+| Neha | `24EG105V11` |
+| Vinuthan | `24EG105Q30` |
+| Sai Sathvik | `24EG105J45`|
 
 GitHub: [@KChethansai](https://github.com/KChethansai)
